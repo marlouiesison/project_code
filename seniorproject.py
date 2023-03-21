@@ -89,7 +89,6 @@ while True:
         oled.text(text, 0, 0, 1)
         oled.show()
     
-S
     except sr.UnknownValueError:
         # display error message on OLED display if speech cannot be transcribed
         oled.fill(0)
