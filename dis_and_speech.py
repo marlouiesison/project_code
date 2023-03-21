@@ -22,7 +22,7 @@ oled = adafruit_ssd1306.SSD1306_I2C(128, 64, i2c, addr=0x3C, reset=None)
 #font=None
 
 # Set up Google credentials and client
-creds = service_account.Credentials.from_service_account_file('/home/pi/api_key/charged-city-380323-7640a3a96310.json')
+creds = service_account.Credentials.from_service_account_file('/home/pi/api_key/....json')
 client = speech.SpeechClient(credentials=creds)
 
 # Set up speech recognition
