@@ -71,5 +71,16 @@ while True:
                 for result in response.results:
                     transcript = result.alternatives[0].transcript
 
+             
                     # Clear OLED display
-                    draw.rectangle((0, 0, oled.width,
+                    draw.rectangle((0, 0, oled.width, oled.height), outline=0, fill=0)
+
+                    # Display transcription on OLED
+                    draw.text((0, 0), transcript, font=font, fill=255)
+                    oled.image(image)
+                    oled.show()
+
+                    # Wait briefly before clearing display and continuing to listen
+                    time.sleep(0.5)
+                    draw.rectangle((0, 0, oled.width, oled.height), outline=0, fill=0)
+
