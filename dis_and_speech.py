@@ -2,6 +2,8 @@ import board
 #from board import SCL, SDA
 import busio
 import adafruit_ssd1306
+import time
+import datetime
 from PIL import Image, ImageDraw, ImageFont
 
 import speech_recognition as sr
@@ -42,10 +44,20 @@ while True:
         # Get drawing object to draw on the image.
         draw = ImageDraw.Draw(image)
         font = ImageFont.load_default()
-
-        oled.text('Say something!', 0, 0, 1)  # display message on OLED display
+        
+        
+        ###
+        now = datetime.datetime.now()
+        date_string = now.strftime("%a, %b %d %Y")
+        time_string = now.strftime("%I:%M %p")
+        #led.text('Say something!', 0, 0, 1)  # display message on OLED display
         #oled.show()
-        draw.text((0, 0, 1), 'Say something!', font=font, fill=255)
+        
+        led.text(date_string, 0, 0, 1)  # display message on OLED display
+        led.text(time_string, 0, 0, 1)  # display message on OLED display
+        draw.text((0, 0, 1), date_string, font=font, fill=255)
+        draw.text((0, 20, 1), time_string, font=font, fill=255)
+        #daw.text((0, 0, 1), 'Say something!', font=font, fill=255)
         oled.image(image)
         oled.show()
         
