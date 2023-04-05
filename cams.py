@@ -43,6 +43,7 @@ message1 = ''
 message2 = ''
 message3 = ''
 message4 = ''
+pic= "Pic!"
 
 # Continuously listen for and transcribe speech
 while True:
@@ -52,11 +53,9 @@ while True:
         oled.fill(0)
         draw = ImageDraw.Draw(image)
         font = ImageFont.load_default()
-        draw.text((40, 20), "Pic!", font=font, fill=255)
+        draw.text((40, 20), pic, font=font, fill=255)
         oled.image(image)
         oled.show()
-        #time.sleep(1)
-        #oled.text("Pic!", 50, 20)
         time.sleep(0.2)
         
     with mic as source:
