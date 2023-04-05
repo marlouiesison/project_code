@@ -1,49 +1,77 @@
-import speech_recognition as sr
 import board
 import busio
 import adafruit_ssd1306
-import pyaudio
+import time
+import datetime
 from PIL import Image, ImageDraw, ImageFont
+import speech_recognition as sr
 
-# Create the I2C interface.
+# Set up OLED display
 i2c = busio.I2C(board.SCL, board.SDA)
+oled = adafruit_ssd1306.SSD1306_I2C(128, 64, i2c, addr=0x3C, reset=None)
 
-# Create the SSD1306 OLED class.
-oled = adafruit_ssd1306.SSD1306_I2C(128, 32, i2c)
-
-# Clear the OLED display buffer.
-oled.fill(0)
-oled.show()
-
-# Create blank image for drawing.
-image = Image.new("1", (oled.width, oled.height))
-
-# Get drawing object to draw on the image.
-draw = ImageDraw.Draw(image)
-
-# Load default font.
-font = ImageFont.load_default()
-
-# Display message on OLED display
-draw.text((0, 0), "Say something!", font=font, fill=255)
-oled.image(image)
-oled.show()
-
-# obtain audio from the microphone
+# Set up speech recognition
 r = sr.Recognizer()
-with sr.Microphone(sample_rate=44100, chunk_size=512) as source:
-    r.adjust_for_ambient_noise(source, duration=0.5)
-    while True:
+mic = sr.Microphone(sample_rate=16000, chunk_size=1024)
+
+# Set up initial display message
+date_string = ''
+time_string = ''
+speech_text = ''
+message = 'Say something!'
+
+# Continuously listen for and transcribe speech
+while True:
+    with mic as source:
+        r.adjust_for_ambient_noise(source)  # adjust for ambient noise
+        oled.fill(0)  # clear OLED display
+
+        # Create blank image for drawing.
+        image = Image.new("1", (oled.width, oled.height))
+
+        # Get drawing object to draw on the image.
+        draw = ImageDraw.Draw(image)
+        font = ImageFont.load_default()
+
+        # Update date and time strings
+        now = datetime.datetime.now()
+        new_date_string = now.strftime("%a, %b %d %Y")
+        new_time_string = now.strftime("%I:%M %p")
+
+        # Update display message with speech text or date and time strings
+        if speech_text:
+            message = speech_text
+        else:
+            message = new_date_string + '\n' + new_time_string
+
+        # Split message into lines
+        lines = message.split('\n')
+
+        # Draw each line on OLED display
+        y = 0
+        for line in lines:
+            draw.text((0, y), line, font=font, fill=255)
+            y += 10
+
+        oled.image(image)
+        oled.show()
+
         audio = r.listen(source)
-        try:
-            recognized_text = r.recognize_google(audio)
-            # Clear the OLED display buffer.
-            oled.fill(0)
-            # Display recognized text on OLED display
-            draw.text((0, 0), recognized_text, font=font, fill=255)
-            oled.image(image)
-            oled.show()
-        except sr.UnknownValueError:
-            print("Google Speech Recognition could not understand audio")
-        except sr.RequestError as e:
-            print("Could not request results from Google Speech Recognition service; {0}".format(e))
+
+    try:
+        # recognize speech using Google Speech Recognition
+        text = r.recognize_google(audio)
+
+        # Update speech text with transcribed text
+        speech_text = text
+
+    except sr.UnknownValueError:
+        # display error message on OLED display if speech cannot be transcribed
+        speech_text = ''
+
+    except sr.RequestError as e:
+        # display error message on OLED display if there is an error with the API
+        speech_text = 'API error: ' + str(e)
+
+    # wait a short time before listening again
+    time.sleep(0.1)
