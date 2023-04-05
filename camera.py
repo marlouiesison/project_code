@@ -10,8 +10,7 @@ import RPi.GPIO as GPIO
 # Set up OLED display
 i2c = busio.I2C(board.SCL, board.SDA)
 oled = adafruit_ssd1306.SSD1306_I2C(128, 64, i2c, addr=0x3C, reset=None)
-pic= "Pic!"
-
+pic = "Pic!"
 
 # Set up the GPIO pins
 GPIO.setmode(GPIO.BCM)
@@ -34,6 +33,7 @@ while True:
     if GPIO.input(24) == GPIO.LOW:
         take_picture()
         oled.fill(0)
+        image = Image.new("1", (oled.width, oled.height))
         draw = ImageDraw.Draw(image)
         font = ImageFont.load_default()
         draw.text((50, 50), pic, font=font, fill=255)
