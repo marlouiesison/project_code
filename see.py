@@ -5,13 +5,20 @@ import time
 import datetime
 from PIL import Image, ImageDraw, ImageFont
 import speech_recognition as sr
-
 import picamera
 import RPi.GPIO as GPIO
 
 # Set up the GPIO pins
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+# Set up OLED display
+i2c = busio.I2C(board.SCL, board.SDA)
+oled = adafruit_ssd1306.SSD1306_I2C(128, 64, i2c, addr=0x3C, reset=None)
+
+# Set up speech recognition
+r = sr.Recognizer()
+mic = sr.Microphone(sample_rate=16000, chunk_size=1024)
 
 # Create a function to take a picture
 def take_picture():
@@ -24,31 +31,22 @@ def take_picture():
         camera.stop_preview()
         print("Picture taken!")
 
-# Continuously check if the button is pressed
-while True:
-    if GPIO.input(24) == GPIO.LOW:
-        take_picture()
-        time.sleep(0.2)
-
-
-
-
-# Set up OLED display
-i2c = busio.I2C(board.SCL, board.SDA)
-oled = adafruit_ssd1306.SSD1306_I2C(128, 64, i2c, addr=0x3C, reset=None)
-
-# Set up speech recognition
-r = sr.Recognizer()
-mic = sr.Microphone(sample_rate=16000, chunk_size=1024)
-
 # Set up initial display message
 date_string = ''
 time_string = ''
 speech_text = ''
+message1 = ''
+message2 = ''
+message3 = ''
 message = 'Say something!'
 
 # Continuously listen for and transcribe speech
 while True:
+    # Continuously check if the button is pressed
+    if GPIO.input(24) == GPIO.LOW:
+        take_picture()
+        time.sleep(0.2)
+else:
     with mic as source:
         r.adjust_for_ambient_noise(source)  # adjust for ambient noise
         oled.fill(0)  # clear OLED display
@@ -66,13 +64,28 @@ while True:
         new_time_string = now.strftime("%I:%M %p")
         
         # Update display message with speech text or date and time strings
-        if speech_text:
-            message = speech_text
+        #if speech_text:
+         #   message = speech_text
+        #else:
+         #   message = ' '.join([new_date_string, new_time_string])
+         if speech_text:
+            lines = speech_text.split('\n')
+            if len(lines) > 0:
+                message1 = lines[0]
+            if len(lines) > 1:
+                message2 = lines[1]
+            if len(lines) > 2:
+                message3 = lines[2]    
         else:
-            message = ' '.join([new_date_string, new_time_string])
+            message1 = new_date_string
+            message2 = new_time_string
         
         # Draw message on OLED display
-        draw.text((0, 0), message, font=font, fill=255)
+        #draw.text((0, 0), message, font=font, fill=255)
+        draw.text((0, 0), message1, font=font, fill=255)
+        draw.text((0, 10), message2, font=font, fill=255)
+        draw.text((0, 20), message3, font=font, fill=255)
+
         oled.image(image)
         oled.show()
         
