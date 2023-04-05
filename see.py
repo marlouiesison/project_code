@@ -102,8 +102,7 @@ while True:
     # wait a short time before listening again
     time.sleep(0.1)
     
-    else:
-        # Continuously check if the button is pressed
-        if GPIO.input(24) == GPIO.LOW:
-            take_picture()
-            time.sleep(0.2)
+    # Continuously check if the button is pressed
+    if GPIO.input(24) == GPIO.LOW:
+        take_picture()
+        time.sleep(0.2)
