@@ -1,5 +1,10 @@
 import time
 import picamera
+import RPi.GPIO as GPIO
+
+# Set up the GPIO pins
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 # Create a function to take a picture
 def take_picture():
@@ -12,5 +17,8 @@ def take_picture():
         camera.stop_preview()
         print("Picture taken and saved as: {}".format(filename))
 
-# Call the take_picture function
-take_picture()
+# Continuously check if the button is pressed
+while True:
+    if GPIO.input(18) == GPIO.LOW:
+        take_picture()
+        time.sleep(1)
