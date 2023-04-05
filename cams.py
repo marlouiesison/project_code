@@ -59,11 +59,6 @@ while True:
         new_time_string = now.strftime("%I:%M %p")
         
         # Update display message with speech text or date and time strings
-        #if speech_text:
-         #   message = speech_text
-        #else:
-         #   message = ' '.join([new_date_string, new_time_string])
-        # Update display message with speech text or date and time strings
         if speech_text:
             lines = speech_text.split('\n')
             if len(lines) > 0:
@@ -80,6 +75,15 @@ while True:
 
             oled.image(image)
             oled.show()   
+        else:
+            message1 = new_date_string
+            message2 = new_time_string
+            message3 = ''
+            draw.text((0, 0), message1, font=font, fill=255)
+            draw.text((0, 10), message2, font=font, fill=255)
+            oled.image(image)
+            oled.show()
+        
         audio = r.listen(source)
 
     try:
