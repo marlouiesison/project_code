@@ -53,7 +53,7 @@ while True:
         oled.fill(0)
         draw = ImageDraw.Draw(image)
         font = ImageFont.load_default()
-        draw.text((40, 20), pic, font=font, fill=255)
+        draw.text((50, 50), pic, font=font, fill=255)
         oled.image(image)
         oled.show()
         time.sleep(0.2)
