@@ -79,9 +79,7 @@ while True:
             draw.text((0, 20), message3, font=font, fill=255)
 
             oled.image(image)
-            oled.show()
-
-            
+            oled.show()   
         audio = r.listen(source)
 
     try:
