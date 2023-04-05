@@ -68,7 +68,8 @@ else:
          #   message = speech_text
         #else:
          #   message = ' '.join([new_date_string, new_time_string])
-         if speech_text:
+        # Update display message with speech text or date and time strings
+        if speech_text:
             lines = speech_text.split('\n')
             if len(lines) > 0:
                 message1 = lines[0]
@@ -76,19 +77,16 @@ else:
                 message2 = lines[1]
             if len(lines) > 2:
                 message3 = lines[2]    
-        else:
-            message1 = new_date_string
-            message2 = new_time_string
-        
-        # Draw message on OLED display
-        #draw.text((0, 0), message, font=font, fill=255)
-        draw.text((0, 0), message1, font=font, fill=255)
-        draw.text((0, 10), message2, font=font, fill=255)
-        draw.text((0, 20), message3, font=font, fill=255)
 
-        oled.image(image)
-        oled.show()
-        
+            # Draw message on OLED display
+            draw.text((0, 0), message1, font=font, fill=255)
+            draw.text((0, 10), message2, font=font, fill=255)
+            draw.text((0, 20), message3, font=font, fill=255)
+
+            oled.image(image)
+            oled.show()
+
+            
         audio = r.listen(source)
 
     try:
