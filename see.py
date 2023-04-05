@@ -42,11 +42,6 @@ message = 'Say something!'
 
 # Continuously listen for and transcribe speech
 while True:
-    # Continuously check if the button is pressed
-    if GPIO.input(24) == GPIO.LOW:
-        take_picture()
-        time.sleep(0.2)
-else:
     with mic as source:
         r.adjust_for_ambient_noise(source)  # adjust for ambient noise
         oled.fill(0)  # clear OLED display
@@ -106,3 +101,9 @@ else:
 
     # wait a short time before listening again
     time.sleep(0.1)
+    
+    else:
+        # Continuously check if the button is pressed
+        if GPIO.input(24) == GPIO.LOW:
+            take_picture()
+            time.sleep(0.2)
