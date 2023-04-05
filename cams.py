@@ -28,7 +28,7 @@ mic = sr.Microphone(sample_rate=16000, chunk_size=1024)
 def take_picture():
     with picamera.PiCamera() as camera:
         camera.start_preview()
-        time.sleep(2)
+        time.sleep(1)
         timestamp = time.strftime('%Y%m%d%H%M%S')
         filename = '/home/pi/image_{}.jpg'.format(timestamp)
         camera.capture(filename)
