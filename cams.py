@@ -63,14 +63,26 @@ while True:
         if speech_text:
             lines = speech_text.split('\n')
             if len(lines) > 0:
-                message1 = lines[0][:20]  # truncate message to 20 characters
                 if len(lines[0]) > 20:
-                    message2 = lines[0][20:][:20]  # add a new line if message exceeds 20 characters
-                if len(lines) > 1:
-                    message3 = lines[1][:20]  # truncate message to 20 characters
-                    if len(lines[1]) > 20:
-                        message4 = lines[1][20:][:20]  # add a new line if message exceeds 20 characters
-                    
+                    message1 = lines[0][:20]  # truncate first line to 20 characters
+                    if len(lines[0]) > 40:
+                        message2 = lines[0][20:40]  # add a new line if first line exceeds 40 characters
+                        if len(lines[0]) > 60:
+                            message3 = lines[0][40:60]  # add a new line if first line exceeds 60 characters
+                            if len(lines[0]) > 80:
+                                message4 = lines[0][60:80]  # add a new line if first line exceeds 80 characters
+                            else:
+                                message4 = lines[0][60:]  # add the remaining characters to the last line
+                        else:
+                            message3 = lines[0][40:]  # add the remaining characters to the last line
+                    else:
+                        message2 = lines[0][20:]  # add the remaining characters to the last line
+                else:
+                    message1 = lines[0]  # set the first line if it's less than or equal to 20 characters
+            if len(lines) > 1:
+                message3 = lines[1][:20]  # truncate second line to 20 characters
+                if len(lines[1]) > 20:
+                    message4 = lines[1][20:]  # add the remaining characters to the last line
 
             # Draw message on OLED display
             draw.text((0, 0), message1, font=font, fill=255)
