@@ -35,9 +35,10 @@ def take_picture():
 date_string = ''
 time_string = ''
 speech_text = ''
-message1 = 'Say something!'
+message1 = ''
 message2 = ''
 message3 = ''
+message = 'Say something!'
 
 # Continuously listen for and transcribe speech
 while True:
@@ -45,29 +46,63 @@ while True:
     if GPIO.input(24) == GPIO.LOW:
         take_picture()
         time.sleep(0.2)
+    else:
+        with mic as source:
+            r.adjust_for_ambient_noise(source)  # adjust for ambient noise
+            oled.fill(0)  # clear OLED display
 
-    # Clear OLED display and update date and time strings
-    oled.fill(0)
-    now = datetime.datetime.now()
-    date_string = now.strftime("%a, %b %d %Y")
-    time_string = now.strftime("%I:%M %p")
+            # Create blank image for drawing.
+            image = Image.new("1", (oled.width, oled.height))
 
-    with mic as source:
-        r.adjust_for_ambient_noise(source)  # adjust for ambient noise
+            # Get drawing object to draw on the image.
+            draw = ImageDraw.Draw(image)
+            font = ImageFont.load_default()
 
-        # Get drawing object to draw on the OLED display
-        image = Image.new("1", (oled.width, oled.height))
-        draw = ImageDraw.Draw(image)
-        font = ImageFont.load_default()
+            # Update date and time strings
+            now = datetime.datetime.now()
+            new_date_string = now.strftime("%a, %b %d %Y")
+            new_time_string = now.strftime("%I:%M %p")
 
-        # Display speech text if it exists, or default message if not
-        if speech_text:
-            lines = speech_text.split('\n')
-            if len(lines) > 0:
-                message1 = lines[0]
-            if len(lines) > 1:
-                message2 = lines[1]
-            if len(lines) > 2:
-                message3 = lines[2]    
+            # Update display message with speech text or date and time strings
+            if speech_text:
+                lines = speech_text.split('\n')
+                if len(lines) > 0:
+                    message1 = lines[0]
+                if len(lines) > 1:
+                    message2 = lines[1]
+                if len(lines) > 2:
+                    message3 = lines[2]    
 
-            draw.text((0, 
+                # Draw message on OLED display
+                draw.text((0, 0), message1, font=font, fill=255)
+                draw.text((0, 10), message2, font=font, fill=255)
+                draw.text((0, 20), message3, font=font, fill=255)
+            else:
+                # Draw date and time strings on OLED display
+                message1 = new_date_string
+                message2 = new_time_string
+                draw.text((0, 0), message1, font=font, fill=255)
+                draw.text((0, 10), message2, font=font, fill=255)
+
+            oled.image(image)
+            oled.show()
+
+            audio = r.listen(source)
+
+        try:
+            # recognize speech using Google Speech Recognition
+            text = r.recognize_google(audio)
+
+            # Update speech text with transcribed text
+            speech_text = text
+
+        except sr.UnknownValueError:
+            # display error message on
+            speech_text = ''
+
+        except sr.RequestError as e:
+            # display error message on OLED display if there is an error with the API
+            speech_text = 'API error: ' + str(e)
+
+        # wait a short time before listening again
+        time.sleep(0.1)
