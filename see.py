@@ -5,12 +5,6 @@ import time
 import datetime
 from PIL import Image, ImageDraw, ImageFont
 import speech_recognition as sr
-import picamera
-import RPi.GPIO as GPIO
-
-# Set up the GPIO pins
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 # Set up OLED display
 i2c = busio.I2C(board.SCL, board.SDA)
@@ -20,24 +14,10 @@ oled = adafruit_ssd1306.SSD1306_I2C(128, 64, i2c, addr=0x3C, reset=None)
 r = sr.Recognizer()
 mic = sr.Microphone(sample_rate=16000, chunk_size=1024)
 
-# Create a function to take a picture
-def take_picture():
-    with picamera.PiCamera() as camera:
-        camera.start_preview()
-        time.sleep(2)
-        timestamp = time.strftime('%Y%m%d%H%M%S')
-        filename = '/home/pi/image_{}.jpg'.format(timestamp)
-        camera.capture(filename)
-        camera.stop_preview()
-        print("Picture taken!")
-
 # Set up initial display message
 date_string = ''
 time_string = ''
 speech_text = ''
-message1 = ''
-message2 = ''
-message3 = ''
 message = 'Say something!'
 
 # Continuously listen for and transcribe speech
@@ -59,27 +39,16 @@ while True:
         new_time_string = now.strftime("%I:%M %p")
         
         # Update display message with speech text or date and time strings
-        #if speech_text:
-         #   message = speech_text
-        #else:
-         #   message = ' '.join([new_date_string, new_time_string])
-        # Update display message with speech text or date and time strings
         if speech_text:
-            lines = speech_text.split('\n')
-            if len(lines) > 0:
-                message1 = lines[0]
-            if len(lines) > 1:
-                message2 = lines[1]
-            if len(lines) > 2:
-                message3 = lines[2]    
-
-            # Draw message on OLED display
-            draw.text((0, 0), message1, font=font, fill=255)
-            draw.text((0, 10), message2, font=font, fill=255)
-            draw.text((0, 20), message3, font=font, fill=255)
-
-            oled.image(image)
-            oled.show()   
+            message = speech_text
+        else:
+            message = ' '.join([new_date_string, new_time_string])
+        
+        # Draw message on OLED display
+        draw.text((0, 0), message, font=font, fill=255)
+        oled.image(image)
+        oled.show()
+        
         audio = r.listen(source)
 
     try:
@@ -99,8 +68,3 @@ while True:
 
     # wait a short time before listening again
     time.sleep(0.1)
-    
-    # Continuously check if the button is pressed
-    if GPIO.input(24) == GPIO.LOW:
-        take_picture()
-        time.sleep(0.2)
