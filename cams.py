@@ -8,6 +8,10 @@ import speech_recognition as sr
 import picamera
 import RPi.GPIO as GPIO
 
+import os
+os.system("sudo amixer cset numid=1 0")
+
+
 # Set up the GPIO pins
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -45,7 +49,14 @@ while True:
     # Continuously check if the button is pressed
     if GPIO.input(24) == GPIO.LOW:
         take_picture()
-        oled.text("Pic!", 50, 20)
+        oled.fill(0)
+        draw = ImageDraw.Draw(image)
+        font = ImageFont.load_default()
+        draw.text((40, 20), "Pic!", font=font, fill=255)
+        oled.image(image)
+        oled.show()
+        #time.sleep(1)
+        #oled.text("Pic!", 50, 20)
         time.sleep(0.2)
         
     with mic as source:
