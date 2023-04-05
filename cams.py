@@ -38,6 +38,7 @@ speech_text = ''
 message1 = ''
 message2 = ''
 message3 = ''
+message4 = ''
 message = 'Say something!'
 
 # Continuously listen for and transcribe speech
@@ -83,6 +84,7 @@ while True:
             message1 = new_date_string
             message2 = new_time_string
             message3 = ''
+            message4 = ''
             draw.text((0, 0), message1, font=font, fill=255)
             draw.text((0, 10), message2, font=font, fill=255)
             oled.image(image)
