@@ -62,16 +62,20 @@ while True:
         if speech_text:
             lines = speech_text.split('\n')
             if len(lines) > 0:
-                message1 = lines[0]
-            if len(lines) > 1:
-                message2 = lines[1]
-            if len(lines) > 2:
-                message3 = lines[2]    
+                message1 = lines[0][:20]  # truncate message to 20 characters
+                if len(lines[0]) > 20:
+                    message2 = lines[0][20:][:20]  # add a new line if message exceeds 20 characters
+                if len(lines) > 1:
+                    message3 = lines[1][:20]  # truncate message to 20 characters
+                    if len(lines[1]) > 20:
+                        message4 = lines[1][20:][:20]  # add a new line if message exceeds 20 characters
+                    
 
             # Draw message on OLED display
             draw.text((0, 0), message1, font=font, fill=255)
             draw.text((0, 10), message2, font=font, fill=255)
             draw.text((0, 20), message3, font=font, fill=255)
+            draw.text((0, 30), message4, font=font, fill=255)
 
             oled.image(image)
             oled.show()   
