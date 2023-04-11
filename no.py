@@ -80,8 +80,8 @@ def take_picture():
             else:
                 message1 = lines[0]  # set the first line if it's less than or equal to 20 characters
         if len(lines) > 1:
-                message3 = lines[1][:20]  # truncate second line to 20 characters
-                if len(lines[1]) > 20:
+            message3 = lines[1][:20]  # truncate second line to 20 characters
+            if len(lines[1]) > 20:
                     message4 = lines[1][20:]  # add the remaining characters to the last line
 
             # Draw message on OLED display
